@@ -1,5 +1,9 @@
 import os
+import platform
 from operator import attrgetter
+
+if platform.system() == "Darwin":
+    IS_MAC = True
 
 class Book():
     def __init__(self):
@@ -29,12 +33,20 @@ class BookList():
 
     def printAll(self):
         for book in self.List:
-            print(book.ID, book.name, book.author, book.price)
+            print("ID:", book.ID, "書名:"+book.name, "作者:"+book.author, "$", book.price)
 
     def findBookName(self, text):
+        flg = False
+
         for book in self.List:
             if text in book.name:
-                print(book.name)
+                if flg == False:#first time print the name
+                    print("查詢結果：")
+                print("書名"+book.name, "作者"+book.author, "$", book.price)
+                flg = True
+        
+        if flg == False:
+            print("查無此書名")
 
     def printByIncreasePrice(self):
         beSorted = sorted(self.List, key=attrgetter("price"))
@@ -52,29 +64,33 @@ class Calculator():
     def __init__(self, bookList):
         self.bookList = bookList
 
-        #print("輸入 0 列出所有書籍。\n輸入 1 進入查詢功能，可以用關鍵字查詢書籍（例如輸入「那些年」，可以找到「那些年我們一起追的女孩」）。\n輸入 2 可以將所有書激依造價格升冪排序，輸入 3 則是依價格降冪排序。\n輸入 4 進入結帳區，可以輸入要購買書籍的ID（例如：1,2,3），輸入方式自行設計，自動計算總價並顯示。")
-
         while True:
-            print("請輸入欲執行的功能編號：")
+
+            print("輸入 0 列出所有書籍。\n輸入 1 進入查詢功能，可以用關鍵字查詢書籍（例如輸入「那些年」，可以找到「那些年我們一起追的女孩」）。\n輸入 2 可以將所有書激依造價格升冪排序，輸入 3 則是依價格降冪排序。\n輸入 4 進入結帳區，可以輸入要購買書籍的ID（例如：1,2,3），輸入方式自行設計，自動計算總價並顯示。")
+
+            print("\n\n請輸入欲執行的功能編號：")
             state = int(input())
 
             if state == 0:
-                exec0()
+                self.exec0()
             elif state == 1:
-                exec1()
+                self.exec1()
             elif state == 2:
-                exec2()
+                self.exec2()
             elif state == 3:
-                exec3()
+                self.exec3()
             elif state == 4:
-                exec4()
+                self.exec4()
             else:
                 print("Invalid Option. ")
 
-            print("是否結束程式？（Ｙ／Ｎ）")
+            print("\n是否結束程式？（Ｙ／Ｎ）")
             s = input()
             if(s[0] == "Y" or s[0] == "y"):
                 break
+
+            if IS_MAC:
+                os.system("clear")
 
     def exec0(self):
         self.bookList.printAll()
@@ -82,6 +98,8 @@ class Calculator():
     def exec1(self):
         print("請輸入關鍵字查詢書名：")
         s = input()
+
+        print("\n")
         
         self.bookList.findBookName(s)
 
@@ -100,8 +118,8 @@ class Calculator():
         while True:
             print("請輸入要購買書的ID（例如：1, 2, 3）")
             val = input()
-            
-            if val < self.bookList.size():
+            print(len(self.bookList))
+            if val < len(self.bookList):
 
                 print(self.bookList[val].name + "已加入購物車")
 
@@ -135,7 +153,8 @@ if __name__=='__main__':
                 book.setPrice(float(s[3]))
                 
                 bookList.List.append(book)
-        bookList.printAll()
-            
+        
+        Calculator(bookList)
+
     else:
         print("No Input File!")
