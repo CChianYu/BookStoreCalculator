@@ -66,10 +66,19 @@ class Calculator():
 
         while True:
 
+            if IS_MAC:
+                os.system("clear")
+
             print("輸入 0 列出所有書籍。\n輸入 1 進入查詢功能，可以用關鍵字查詢書籍（例如輸入「那些年」，可以找到「那些年我們一起追的女孩」）。\n輸入 2 可以將所有書激依造價格升冪排序，輸入 3 則是依價格降冪排序。\n輸入 4 進入結帳區，可以輸入要購買書籍的ID（例如：1,2,3），輸入方式自行設計，自動計算總價並顯示。")
 
             print("\n\n請輸入欲執行的功能編號：")
-            state = int(input())
+            state = input()
+
+            try:
+                state = int(state)
+            except:
+                print("請輸入數字")
+                continue
 
             if state == 0:
                 self.exec0()
@@ -82,11 +91,11 @@ class Calculator():
             elif state == 4:
                 self.exec4()
             else:
-                print("Invalid Option. ")
+                print("請輸入0~4")
 
             print("\n是否結束程式？（Ｙ／Ｎ）")
             s = input()
-            if(s[0] == "Y" or s[0] == "y"):
+            if(len(s) > 0 and (s[0] == "Y" or s[0] == "y")):
                 break
 
             if IS_MAC:
@@ -104,33 +113,43 @@ class Calculator():
         self.bookList.findBookName(s)
 
     def exec2(self):
+        print("\n按價格由低至高：")
         self.bookList.printByIncreasePrice()
 
     def exec3(self):
+        print("\n按價格由高至低：")
         self.bookList.printByDecreasePrice()
 
     def exec4(self):
         
-        self.bookList.printAll()
-        
         total = 0.0
 
         while True:
-            print("請輸入要購買書的ID（例如：1, 2, 3）")
+            if IS_MAC:
+                os.system("clear")
+
+            self.bookList.printAll()
+            print("\n請輸入要購買書的ID（例如：1, 2, 3）")
             val = input()
-            print(len(self.bookList))
-            if val < len(self.bookList):
 
-                print(self.bookList[val].name + "已加入購物車")
+            try:
+                val = int(val)
+            except ValueError:
+                print("請輸入數字")
+                continue
 
-                total += self.bookList[val].price
+            if val < len(self.bookList.List):
+
+                print("已加入購物車"+self.bookList.List[val-1].name )
+
+                total += self.bookList.List[val-1].price
                 
-                print("是否加購其他書籍？（Y/N）")
+                print("\n是否加購其他書籍？（Y/N）")
                 s = input()
 
-                if(s[0] == "Y" or s[0] == 'y'):
+                if(len(s)>0 and (s[0] == "N" or s[0] == 'n')):
                     break
-        print("您的帳單金額總共為" + total + "元")
+        print("\n您的帳單金額總共為$" + str(total) + "元")
         print("謝謝您的惠顧")
 
 
