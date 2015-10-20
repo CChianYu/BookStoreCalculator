@@ -2,8 +2,9 @@ import os
 import platform
 from operator import attrgetter
 
-if platform.system() == "Darwin":
-    IS_MAC = True
+def clear():
+    os.system("clear" if platform.system() == "Darwin" else "cls")
+        
 
 class Book():
     def __init__(self):
@@ -34,7 +35,7 @@ class BookList():
 
     def printAll(self):
         for book in self.List:
-            print("ID:", book.ID, "書名:"+book.name, "作者:"+book.author, "$", book.price)
+            print(book.ID, book.name, book.author, "$", book.price)
 
     def findBookName(self, text):
         flg = False
@@ -43,7 +44,7 @@ class BookList():
             if text in book.name:
                 if flg == False:#first time print the name
                     print("查詢結果：")
-                print("書名"+book.name, "作者"+book.author, "$", book.price)
+                print(book.name, book.author, "$", book.price)
                 flg = True
         
         if flg == False:
@@ -53,13 +54,13 @@ class BookList():
         beSorted = sorted(self.List, key=attrgetter("price"))
         
         for book in beSorted:
-            print(book.ID, book.name, book.author, book.price)
+            print(book.name, book.author, book.price)
 
     def printByDecreasePrice(self):
         beSorted = sorted(self.List, key=attrgetter("price"), reverse=True)
 
         for book in beSorted:
-            print(book.ID, book.name, book.author, book.price)
+            print(book.name, book.author, book.price)
 
 class Calculator():
     def __init__(self, bookList):
@@ -67,8 +68,7 @@ class Calculator():
 
         while True:
 
-            if IS_MAC:
-                os.system("clear")
+            clear()
 
             print("輸入 0 列出所有書籍。\n輸入 1 進入查詢功能，可以用關鍵字查詢書籍。\n輸入 2 可以將所有書籍依照價格升冪排序。\n輸入 3 則是依價格降冪排序。\n輸入 4 進入結帳區，可以輸入要購買書籍的ID（例如：1,2,3）。")
 
@@ -96,16 +96,26 @@ class Calculator():
 
             print("\n是否結束程式？（Ｙ／Ｎ）")
             s = input()
-            if(len(s) > 0 and (s[0] == "Y" or s[0] == "y")):
-                break
+            if len(s) == 1:
+                if s[0] == "Y" or s[0] == "y":
+                    break
+                elif s[0] =="N" or s[0] == "n":
+                    continue
+                #else:
+                    #暫時想不到好的處理方法QQ
 
-            if IS_MAC:
-                os.system("clear")
+            #else:
+                #暫時想不到好的處理方法QQ
+
 
     def exec0(self):
+        clear()
+
         self.bookList.printAll()
 
     def exec1(self):
+        clear()
+
         print("請輸入關鍵字查詢書名：")
         s = input()
 
@@ -114,10 +124,14 @@ class Calculator():
         self.bookList.findBookName(s)
 
     def exec2(self):
+        clear()
+
         print("\n按價格由低至高：")
         self.bookList.printByIncreasePrice()
 
     def exec3(self):
+        clear()
+
         print("\n按價格由高至低：")
         self.bookList.printByDecreasePrice()
 
@@ -128,8 +142,8 @@ class Calculator():
         for i in range(0, len(self.bookList.List)):
             bookCount.append(0)
 
-        if IS_MAC:
-            os.system("clear")
+        clear()
+
         self.bookList.printAll()
         print("\n請輸入要購買書的ID（例如：1, 2, 3）或是輸入-1結束購買")
 
@@ -140,10 +154,10 @@ class Calculator():
             try:
                 val = int(val)
             except ValueError:
-                if IS_MAC:
-                    os.system("clear")
+                clear()
 
                 self.bookList.printAll()
+                print("\n輸入錯誤")
                 print("\n請輸入要購買書的ID（例如：1, 2, 3）或是輸入-1結束購買")
 
                 val = input()
@@ -163,24 +177,25 @@ class Calculator():
                 print("\n目前總金額為$"+str(total))
 
                 #continue
-                if IS_MAC:
-                    os.system("clear")
+                clear()
 
                 self.bookList.printAll()
-                print("\n已加入購物車: "+self.bookList.List[val].name )
+                print("\n已加入購物車: "+self.bookList.List[val].name+" x "+str(bookCount[val]))
                 print("目前總金額為$"+str(total))
                 print("\n請輸入要購買書的ID（例如：1, 2, 3）或是輸入-1結束購買")
 
                 val = input()
             else:
-                if IS_MAC:
-                    os.system("clear")
+                clear()
 
                 self.bookList.printAll()
+
+                print("\n輸入錯誤")
                 print("\n請輸入要購買書的ID（例如：1, 2, 3）或是輸入-1結束購買")
 
                 val = input()
 
+        clear()
 
         print("您的購買清單:")
         for i in range(0, len(bookCount)):
@@ -189,13 +204,9 @@ class Calculator():
         print("\n您的帳單金額總共為$" + str(total) + "元")
         print("謝謝您的惠顧")
 
-
-if __name__=='__main__':
-
-    if os.path.exists("./01-input.txt"):
-        f = open("./01-input.txt", "r")
-        
-        bookList = BookList()
+def LoadFile(bookList, filePath):
+    if os.path.exists(filePath):
+        f = open(filePath, "r")
         for s in f:
             s = s.strip()
 
@@ -209,8 +220,12 @@ if __name__=='__main__':
                 book.setPrice(float(s[3]))
                 
                 bookList.List.append(book)
-        
-        Calculator(bookList)
-
     else:
         print("No Input File!")
+
+if __name__=='__main__':
+        bookList = BookList()
+
+        LoadFile(bookList, "./01-input.txt")
+        
+        Calculator(bookList)
